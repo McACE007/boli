@@ -1,5 +1,7 @@
 package com.boli.userservice.model;
 
+import com.boli.userservice.enums.RoleType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,5 +28,5 @@ public class Role {
   private long id;
   @Enumerated(EnumType.STRING)
   @Column(unique = true, nullable = false, name = "name")
-  private String name;
+  private RoleType name;
 }
