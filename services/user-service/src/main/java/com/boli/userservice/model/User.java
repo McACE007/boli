@@ -1,7 +1,10 @@
 package com.boli.userservice.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,8 +14,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.boli.userservice.enums.RoleType;
 import com.boli.userservice.enums.UserStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,8 +29,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,6 +42,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @SuppressWarnings("unused")
 @Table(name = "users")
 public class User implements UserDetails {
@@ -56,15 +64,19 @@ public class User implements UserDetails {
   @UpdateTimestamp
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private Set<Role> roles;
   @Enumerated(EnumType.STRING)
+  @Column(name = "role", nullable = false)
+  private RoleType role;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
   private UserStatus status;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default
+  private List<Address> addresses = new ArrayList<>();
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName().asAuthority())).toList();
+    return Collections.singletonList(new SimpleGrantedAuthority(role.asAuthority()));
   }
 
   @Override
@@ -85,5 +97,15 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return status != UserStatus.INACTIVE;
+  }
+
+  public void addAddress(Address address) {
+    addresses.add(address);
+    address.setUser(this);
+  }
+
+  public void removeAddress(Address address) {
+    addresses.remove(address);
+    address.setUser(null);
   }
 }

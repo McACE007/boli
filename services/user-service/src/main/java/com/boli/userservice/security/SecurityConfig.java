@@ -33,7 +33,7 @@ public class SecurityConfig {
             .requestMatchers("/internal/**").hasAnyRole("BUYER", "SELLER", "ADMIN")
 
             // User
-            .requestMatchers("/user/**").authenticated()
+            .requestMatchers("/users/**").authenticated()
 
             // Admin only
             .requestMatchers("/admin/**").hasRole("ADMIN")
