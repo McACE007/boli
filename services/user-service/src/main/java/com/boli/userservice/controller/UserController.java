@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boli.userservice.dto.ApiResponse;
+import com.boli.common.dto.ApiResponse;
 import com.boli.userservice.dto.UserProfileDto;
 import com.boli.userservice.service.UserService;
-import com.boli.userservice.util.ResponseBuilder;
+import com.boli.common.util.ResponseBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

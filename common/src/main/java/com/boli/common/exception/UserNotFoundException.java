@@ -1,4 +1,4 @@
-package com.boli.userservice.exception;
+package com.boli.common.exception;
 
 public class UserNotFoundException extends RuntimeException {
   public UserNotFoundException(String identifier) {

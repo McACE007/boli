@@ -27,6 +27,8 @@
     <module>services/config-server</module>
     <module>services/discovery-service</module>
     <module>services/user-service</module>
+	  <module>services/auction-service</module>
+	  <module>common</module>
   </modules>
 
 
@@ -38,6 +40,11 @@
 				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.boli</groupId>
+				<artifactId>common</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

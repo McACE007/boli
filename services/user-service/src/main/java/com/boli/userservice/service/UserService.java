@@ -4,12 +4,9 @@ import org.springframework.stereotype.Service;
 
 import com.boli.userservice.dto.UserProfileDto;
 import com.boli.userservice.model.User;
-import com.boli.userservice.repository.UserRepository;
 import com.boli.userservice.repository.wrapper.UserRepositoryWrapper;
-import com.boli.userservice.exception.UserNotFoundException;
 import com.boli.userservice.mapper.UserMapper;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

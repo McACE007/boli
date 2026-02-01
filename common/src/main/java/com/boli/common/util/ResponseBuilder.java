@@ -1,11 +1,11 @@
-package com.boli.userservice.util;
+package com.boli.common.util;
 
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.boli.userservice.dto.ApiResponse;
+import com.boli.common.dto.ApiResponse;
 
 public class ResponseBuilder {
   private ResponseBuilder() {

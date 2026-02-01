@@ -1,0 +1,21 @@
+package com.boli.auctionservice.dto;
+
+import java.util.List;
+
+import com.boli.common.enums.RoleType;
+import com.boli.common.enums.UserStatus;
+
+import com.boli.userservice.model.Address;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class UserProfileDto {
+  private String username;
+  private String fullName;
+  private String email;
+  private RoleType role;
+  private UserStatus status;
+  private List<Address> addresses;
+}

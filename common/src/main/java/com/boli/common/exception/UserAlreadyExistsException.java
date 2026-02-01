@@ -1,4 +1,4 @@
-package com.boli.userservice.exception;
+package com.boli.common.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
   public UserAlreadyExistsException(String identifier) {

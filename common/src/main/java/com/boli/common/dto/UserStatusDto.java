@@ -1,6 +1,6 @@
-package com.boli.userservice.dto;
+package com.boli.common.dto;
 
-import com.boli.userservice.enums.UserStatus;
+import com.boli.common.enums.UserStatus;
 
 import lombok.Builder;
 import lombok.Data;

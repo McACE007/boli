@@ -2,7 +2,7 @@ package com.boli.userservice.repository.wrapper;
 
 import org.springframework.stereotype.Repository;
 
-import com.boli.userservice.exception.UserNotFoundException;
+import com.boli.common.exception.UserNotFoundException;
 import com.boli.userservice.model.User;
 import com.boli.userservice.repository.UserRepository;
 

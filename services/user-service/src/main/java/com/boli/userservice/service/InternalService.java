@@ -2,7 +2,7 @@ package com.boli.userservice.service;
 
 import org.springframework.stereotype.Service;
 
-import com.boli.userservice.dto.InternalUserProfileDto;
+import com.boli.common.dto.InternalUserProfileDto;
 import com.boli.userservice.mapper.UserMapper;
 import com.boli.userservice.model.User;
 import com.boli.userservice.repository.wrapper.UserRepositoryWrapper;

@@ -1,4 +1,4 @@
-package com.boli.userservice.enums;
+package com.boli.common.enums;
 
 public enum UserStatus {
   ACTIVE, BLOCKED, DELETED, INACTIVE;

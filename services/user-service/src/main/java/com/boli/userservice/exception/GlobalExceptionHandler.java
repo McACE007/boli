@@ -3,14 +3,16 @@ package com.boli.userservice.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.boli.common.exception.InvalidCredentialsException;
+import com.boli.common.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.boli.userservice.dto.ApiResponse;
-import com.boli.userservice.util.ResponseBuilder;
+import com.boli.common.dto.ApiResponse;
+import com.boli.common.util.ResponseBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 

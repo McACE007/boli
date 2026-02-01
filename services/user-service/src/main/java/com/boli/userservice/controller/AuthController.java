@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boli.userservice.dto.ApiResponse;
+import com.boli.common.dto.ApiResponse;
 import com.boli.userservice.dto.LoginRequest;
 import com.boli.userservice.dto.RegisterRequest;
 import com.boli.userservice.service.AuthService;
-import com.boli.userservice.util.ResponseBuilder;
+import com.boli.common.util.ResponseBuilder;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.boli.userservice.dto;
+package com.boli.common.dto;
 
 import java.util.Map;
 
