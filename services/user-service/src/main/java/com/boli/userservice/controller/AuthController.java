@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @Slf4j
 public class AuthController {
   private final AuthService authService;
@@ -27,7 +27,7 @@ public class AuthController {
   public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody RegisterRequest request) {
     log.info("auth_register_api_called | username={}", request.getUsername());
     authService.register(request);
-    return ResponseBuilder.created("User Registered Successfully");
+    return ResponseBuilder.created(null,"User Registered Successfully");
   }
 
   @PostMapping("/login")

@@ -1,5 +1,6 @@
-package com.boli.userservice.security;
+package com.boli.userservice.config;
 
+import com.boli.userservice.filter.InternalAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
 public class SecurityConfig {
-  private final JwtFilter jwtFilter;
+  private final InternalAuthFilter internalAuthFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -24,19 +25,19 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
 
             // Public
-            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/api/auth/**").permitAll()
 
             // Internal (used by other services)
-            .requestMatchers("/internal/**").hasAnyRole("BUYER", "SELLER", "ADMIN")
+            .requestMatchers("/api/internal/**").authenticated()
 
             // User
-            .requestMatchers("/users/**").authenticated()
+            .requestMatchers("/api/users/**").authenticated()
 
             // Admin only
-            .requestMatchers("/admin/**").hasRole("ADMIN")
+            .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
             .anyRequest().denyAll())
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(internalAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return httpSecurity.build();
   }

@@ -3,8 +3,6 @@ package com.boli.userservice.exception;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.boli.common.exception.InvalidCredentialsException;
-import com.boli.common.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,12 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
   @ExceptionHandler(InvalidCredentialsException.class)
   public ResponseEntity<ApiResponse<Void>> handleInvaidCredentialsException(InvalidCredentialsException e) {
-    return ResponseBuilder.unauthorized(e.getMessage());
+    return ResponseBuilder.error(HttpStatus.UNAUTHORIZED, e.getMessage(), null);
   }
 
   @ExceptionHandler(UserAlreadyExistsException.class)
   public ResponseEntity<ApiResponse<Void>> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
-    return ResponseBuilder.conflict(e.getMessage());
+    return ResponseBuilder.error(HttpStatus.CONFLICT, e.getMessage(), null);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,6 +41,6 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
     log.error("unexcepted_exception | error_message={}", e.getMessage(), e);
-    return ResponseBuilder.internalServerError("Internal Server Error");
+    return ResponseBuilder.error(HttpStatus.INTERNAL_SERVER_ERROR ,"Something went wrong!", null);
   }
 }

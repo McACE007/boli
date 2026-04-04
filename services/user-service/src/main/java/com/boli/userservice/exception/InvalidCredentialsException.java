@@ -1,7 +1,7 @@
-package com.boli.common.exception;
+package com.boli.userservice.exception;
 
 public class InvalidCredentialsException extends RuntimeException {
   public InvalidCredentialsException() {
-    super("Invaild username or password");
+    super("Invalid username or password");
   }
 }

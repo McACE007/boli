@@ -2,7 +2,7 @@ package com.boli.userservice.service;
 
 import org.springframework.stereotype.Service;
 
-import com.boli.common.dto.UserStatusDto;
+import com.boli.userservice.dto.UserStatusDto;
 import com.boli.common.enums.UserStatus;
 import com.boli.userservice.mapper.UserMapper;
 import com.boli.userservice.model.User;

@@ -6,13 +6,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(schema = "auction")
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Auction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +30,9 @@ public class Auction {
     @Column(name = "min_increment", nullable = false)
     private Double minIncrement;
     @Column(name = "start_time", nullable = false)
-    private Timestamp startTime;
+    private LocalDateTime startTime;
     @Column(name = "end_time", nullable = false)
-    private Timestamp endTime;
+    private LocalDateTime endTime;
     @Column(nullable = false)
     private AuctionStatus status;
     @Column(name = "winner_id")
@@ -38,9 +41,8 @@ public class Auction {
     private Double winningAmount;
     @Column(name = "created_at")
     @CreatedDate
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
-
+    private LocalDateTime updatedAt;
 }

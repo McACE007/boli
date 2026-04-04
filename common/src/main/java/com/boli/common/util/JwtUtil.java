@@ -1,4 +1,4 @@
-package com.boli.userservice.security;
+package com.boli.common.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

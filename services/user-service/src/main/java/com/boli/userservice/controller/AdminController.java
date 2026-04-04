@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boli.common.dto.ApiResponse;
-import com.boli.common.dto.UserStatusDto;
+import com.boli.userservice.dto.UserStatusDto;
 import com.boli.userservice.service.AdminService;
 import com.boli.common.util.ResponseBuilder;
 
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
   private final AdminService adminService;
 

@@ -2,7 +2,7 @@ package com.boli.userservice.service;
 
 import org.springframework.stereotype.Service;
 
-import com.boli.userservice.dto.UserProfileDto;
+import com.boli.userservice.dto.UserProfileResponse;
 import com.boli.userservice.model.User;
 import com.boli.userservice.repository.wrapper.UserRepositoryWrapper;
 import com.boli.userservice.mapper.UserMapper;
@@ -18,7 +18,7 @@ public class UserService {
   private final UserRepositoryWrapper userRepositoryWrapper;
   private final UserMapper userMapper;
 
-  public UserProfileDto getCurrentUserProfile(String username) {
+  public UserProfileResponse getCurrentUserProfile(String username) {
     User user = userRepositoryWrapper.getByUsername(username);
     return userMapper.toProfileDto(user);
   }

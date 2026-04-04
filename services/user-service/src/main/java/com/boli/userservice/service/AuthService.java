@@ -1,6 +1,6 @@
 package com.boli.userservice.service;
 
-import com.boli.userservice.security.JwtUtil;
+import com.boli.common.util.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +9,8 @@ import com.boli.userservice.dto.RegisterRequest;
 import com.boli.common.enums.RoleType;
 import com.boli.common.enums.UserStatus;
 import com.boli.userservice.repository.UserRepository;
-import com.boli.common.exception.InvalidCredentialsException;
-import com.boli.common.exception.UserAlreadyExistsException;
+import com.boli.userservice.exception.InvalidCredentialsException;
+import com.boli.userservice.exception.UserAlreadyExistsException;
 import com.boli.userservice.model.User;
 
 import lombok.RequiredArgsConstructor;

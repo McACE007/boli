@@ -1,4 +1,4 @@
-package com.boli.common.dto;
+package com.boli.userservice.dto;
 
 import com.boli.common.enums.UserStatus;
 
