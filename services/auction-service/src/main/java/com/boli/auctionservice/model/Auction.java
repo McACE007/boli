@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(schema = "auction")
+@Table(name = "auction")
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)

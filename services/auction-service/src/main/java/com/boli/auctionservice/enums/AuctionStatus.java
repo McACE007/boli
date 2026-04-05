@@ -1,11 +1,10 @@
 package com.boli.auctionservice.enums;
 
 public enum AuctionStatus {
-    CREATED, SCHEDULED, LIVE, ENDED, CANCELLED;
+    SCHEDULED, LIVE, ENDED, CANCELLED;
 
     public boolean canTransitionTo(AuctionStatus newStatus) {
         return switch (this) {
-            case CREATED -> newStatus == SCHEDULED || newStatus == CANCELLED;
             case SCHEDULED -> newStatus == LIVE || newStatus == CANCELLED;
             case LIVE -> newStatus == ENDED;
             case ENDED, CANCELLED -> false;
@@ -13,7 +12,7 @@ public enum AuctionStatus {
     }
 
     public boolean isEditable() {
-        return this == CREATED || this == SCHEDULED;
+        return this == SCHEDULED;
     }
 
     public boolean isBiddable() {

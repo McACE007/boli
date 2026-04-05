@@ -1,18 +1,32 @@
 package com.boli.auctionservice.service;
 
+import com.boli.auctionservice.dto.AuctionFilterRequest;
 import com.boli.auctionservice.dto.AuctionResponse;
 import com.boli.auctionservice.dto.CreateAuctionRequest;
 import com.boli.auctionservice.enums.AuctionStatus;
+import com.boli.auctionservice.exception.AuctionNotFoundException;
 import com.boli.auctionservice.exception.InvalidAuctionDataException;
+import com.boli.auctionservice.kafka.AuctionEvent;
+import com.boli.auctionservice.kafka.AuctionEventPayload;
+import com.boli.auctionservice.kafka.AuctionEventProducer;
 import com.boli.auctionservice.mapper.AuctionMapper;
 import com.boli.auctionservice.model.Auction;
 import com.boli.auctionservice.repository.wrapper.AuctionRepository;
+import com.boli.auctionservice.specification.AuctionSpecification;
+import com.boli.common.dto.PageResponse;
+import com.boli.common.enums.AuctionEventType;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,34 +34,98 @@ import java.time.LocalDateTime;
 public class AuctionService {
   private final AuctionRepository auctionRepository;
   private final AuctionMapper auctionMapper;
+  private final AuctionEventProducer auctionEventProducer;
 
   public AuctionResponse createAuction(CreateAuctionRequest request, Long userId) {
     log.info("auction_creation_initiated | userId={}", userId);
     Auction auction = auctionMapper.toAuction(request);
 
     if(!auction.getStartTime().isAfter(LocalDateTime.now().plusMinutes(5))){
-      log.error("auction_creation_failed | reason=Start time must be at least 5 minutes from now | userId={}", userId);
+      log.warn("auction_creation_failed | reason=start_time_too_early | userId={}", userId);
       throw new InvalidAuctionDataException("Start time must be at least 5 minutes from now");
     }
 
     if(!auction.getEndTime().isAfter(auction.getStartTime().plusMinutes(5))){
-      log.error("auction_creation_failed | reason=End time must be at least 5 minutes from the Start Time | userId={}", userId);
+      log.warn("auction_creation_failed | reason=end_time_too_early | userId={}", userId);
       throw new InvalidAuctionDataException("End time must be at least 5 minutes from the Start Time");
     }
 
-    auction.setStatus(AuctionStatus.CREATED);
+    auction.setStatus(AuctionStatus.SCHEDULED);
     auction.setSellerId(userId);
 
+    auctionRepository.save(auction);
+    log.info("auction_creation_success | auction_id={} | seller_id={}", auction.getId(), auction.getSellerId());
+
     try {
-      auctionRepository.save(auction);
-      log.info("auction_creation_success | auction_id={} | seller_id={}", auction.getId(), auction.getSellerId());
+      auctionEventProducer.publish(AuctionEvent.builder()
+              .eventType(AuctionEventType.AUCTION_CREATED)
+              .timestamp(LocalDateTime.now())
+              .data(AuctionEventPayload.builder()
+                      .auctionId(auction.getId())
+                      .sellerId(auction.getSellerId())
+                      .status(auction.getStatus())
+                      .startTime(auction.getStartTime())
+                      .endTime(auction.getEndTime())
+                      .build())
+              .build());
     } catch (Exception e) {
-      log.error(
-              "auction_creation_failed_unexpected | auction_id={} | seller_id={}",
-              auction.getId(), auction.getSellerId(),
-              e);
-      throw e;
+      log.error("auction_event_publish_failed | reason=kafka_unavailable | auctionId={}",
+              auction.getId(), e);
     }
+
     return auctionMapper.toAuctionResponse(auction);
+  }
+
+  public AuctionResponse getAuction(Long auctionId) {
+    log.info("auction_fetch_initiated | auctionId={}", auctionId);
+
+    Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> {
+      log.warn("auction_fetch_failed | reason=auction_not_found | auctionId={}", auctionId);
+      return new AuctionNotFoundException(auctionId);
+    });
+
+    return auctionMapper.toAuctionResponse(auction);
+  }
+
+  public PageResponse<AuctionResponse> getAuctions(AuctionFilterRequest filters) {
+    log.info("auctions_fetch_initiated");
+
+    Pageable pageable = PageRequest.of(filters.getPage(), filters.getSize());
+    Specification<Auction> specification = Specification.where(AuctionSpecification.hasStatus(filters.getStatus())).and(AuctionSpecification.minPrice(filters.getMinPrice())).and(AuctionSpecification.maxPrice(filters.getMaxPrice()));
+    Page<Auction> page = auctionRepository.findAll(specification, pageable);
+
+    log.info("auctions_fetch_success | totalElements={} | page={}" ,page.getTotalElements(), filters.getPage());
+
+    return auctionMapper.toPageResponse(page);
+  }
+
+  @Transactional
+  public void startAuctions() {
+    log.info("auctions_schedule_start_initiated");
+    List<Auction> auctionsToStart = auctionRepository.findAndLockAuctionsToStart(AuctionStatus.SCHEDULED, LocalDateTime.now());
+
+    auctionsToStart.forEach(auction -> {
+      auction.setStatus(AuctionStatus.LIVE);
+
+      try {
+        auctionEventProducer.publish(AuctionEvent.builder()
+                .eventType(AuctionEventType.AUCTION_STARTED)
+                .timestamp(LocalDateTime.now())
+                .data(AuctionEventPayload.builder()
+                        .auctionId(auction.getId())
+                        .sellerId(auction.getSellerId())
+                        .status(auction.getStatus())
+                        .startTime(auction.getStartTime())
+                        .endTime(auction.getEndTime())
+                        .build())
+                .build());
+      } catch (Exception e) {
+        log.error("auction_event_publish_failed | reason=kafka_unavailable | auctionId={}",
+                auction.getId(), e);
+      }
+    });
+    auctionRepository.saveAll(auctionsToStart);
+
+    log.info("auctions_schedule_start_success | auctionsStarted={}" ,auctionsToStart.size());
   }
 }
