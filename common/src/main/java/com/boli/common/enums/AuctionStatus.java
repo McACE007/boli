@@ -1,4 +1,4 @@
-package com.boli.auctionservice.enums;
+package com.boli.common.enums;
 
 public enum AuctionStatus {
     SCHEDULED, LIVE, ENDED, CANCELLED;

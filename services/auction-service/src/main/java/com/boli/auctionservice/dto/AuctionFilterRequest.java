@@ -1,6 +1,6 @@
 package com.boli.auctionservice.dto;
 
-import com.boli.auctionservice.enums.AuctionStatus;
+import com.boli.common.enums.AuctionStatus;
 import lombok.Data;
 
 @Data

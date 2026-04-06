@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: bidding-service
+  profiles:
+    active: dev
+  config:
+    import: optional:configserver:http://localhost:8888
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: bidding-service-group
+      auto-offset-reset: earliest # Read from beginning if no offset exists
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.boli.*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.boli.biddingservice.kafka.AuctionEvent
+      data:
+        redis:
+          host: localhost
+          port: 6379
+server:
+  port: 8092

@@ -23,13 +23,14 @@
 		<spring-cloud.version>2023.0.3</spring-cloud.version>
 	</properties>
 
-  <modules>
-    <module>services/config-server</module>
-    <module>services/discovery-service</module>
-    <module>services/user-service</module>
-	  <module>services/auction-service</module>
-	  <module>common</module>
-  </modules>
+	<modules>
+    	<module>services/config-server</module>
+    	<module>services/discovery-service</module>
+    	<module>services/user-service</module>
+	  	<module>services/auction-service</module>
+		<module>services/bidding-service</module>
+	  	<module>common</module>
+  	</modules>
 
 
 	<dependencyManagement>

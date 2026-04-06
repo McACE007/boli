@@ -1,6 +1,6 @@
 package com.boli.auctionservice.exception;
 
-import com.boli.auctionservice.enums.AuctionStatus;
+import com.boli.common.enums.AuctionStatus;
 import org.springframework.http.HttpStatus;
 
 public class InvalidAuctionStateException extends AuctionServiceException{

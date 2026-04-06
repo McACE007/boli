@@ -1,6 +1,6 @@
 package com.boli.auctionservice.specification;
 
-import com.boli.auctionservice.enums.AuctionStatus;
+import com.boli.common.enums.AuctionStatus;
 import com.boli.auctionservice.model.Auction;
 import org.springframework.data.jpa.domain.Specification;
 

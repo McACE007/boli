@@ -12,6 +12,11 @@ public class AuctionScheduler {
 
     @Scheduled(fixedDelay = 60000)
     public void startAuctions(){
-        return auctionService.start
+        auctionService.startAuctions();
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void endAuctions(){
+        auctionService.endAuctions();
     }
 }

@@ -1,6 +1,6 @@
 package com.boli.auctionservice.repository.wrapper;
 
-import com.boli.auctionservice.enums.AuctionStatus;
+import com.boli.common.enums.AuctionStatus;
 import com.boli.auctionservice.model.Auction;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +16,13 @@ public interface AuctionRepository extends JpaRepository<Auction, Long>, JpaSpec
     @Query("SELECT a FROM Auction a WHERE a.status = :status AND a.startTime <= :now")
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Auction> findAndLockAuctionsToStart(
+            @Param("status") AuctionStatus status,
+            @Param("now") LocalDateTime now
+    );
+
+    @Query("SELECT a FROM Auction a WHERE a.status = :status AND a.endTime <= :now")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Auction> findAndLockAuctionsToEnd(
             @Param("status") AuctionStatus status,
             @Param("now") LocalDateTime now
     );

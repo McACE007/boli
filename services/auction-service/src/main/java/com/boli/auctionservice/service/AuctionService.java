@@ -3,7 +3,7 @@ package com.boli.auctionservice.service;
 import com.boli.auctionservice.dto.AuctionFilterRequest;
 import com.boli.auctionservice.dto.AuctionResponse;
 import com.boli.auctionservice.dto.CreateAuctionRequest;
-import com.boli.auctionservice.enums.AuctionStatus;
+import com.boli.common.enums.AuctionStatus;
 import com.boli.auctionservice.exception.AuctionNotFoundException;
 import com.boli.auctionservice.exception.InvalidAuctionDataException;
 import com.boli.auctionservice.kafka.AuctionEvent;
@@ -101,12 +101,22 @@ public class AuctionService {
 
   @Transactional
   public void startAuctions() {
-    log.info("auctions_schedule_start_initiated");
+    log.info("scheduler_start_auctions_triggered");
+
     List<Auction> auctionsToStart = auctionRepository.findAndLockAuctionsToStart(AuctionStatus.SCHEDULED, LocalDateTime.now());
+    auctionsToStart.forEach(auction -> {
+      if(!auction.getStatus().canTransitionTo(AuctionStatus.LIVE)){
+        log.error("auction_transition_skipped | reason=invalid_state_transition | fromState={} | toState={} | auctionId={}", auction.getStatus(), AuctionStatus.LIVE, auction.getId());
+        return;
+      }
+      auction.setStatus(AuctionStatus.LIVE);
+      log.info("auction_transitioned_to_live | auctionId={} | sellerId={}",
+              auction.getId(), auction.getSellerId());
+    });
+
+    auctionRepository.saveAll(auctionsToStart);
 
     auctionsToStart.forEach(auction -> {
-      auction.setStatus(AuctionStatus.LIVE);
-
       try {
         auctionEventProducer.publish(AuctionEvent.builder()
                 .eventType(AuctionEventType.AUCTION_STARTED)
@@ -119,13 +129,55 @@ public class AuctionService {
                         .endTime(auction.getEndTime())
                         .build())
                 .build());
+                log.debug("auction_event_publish_success | eventType=AUCTION_STARTED | auctionId={}",
+                auction.getId());
       } catch (Exception e) {
         log.error("auction_event_publish_failed | reason=kafka_unavailable | auctionId={}",
                 auction.getId(), e);
       }
     });
-    auctionRepository.saveAll(auctionsToStart);
 
-    log.info("auctions_schedule_start_success | auctionsStarted={}" ,auctionsToStart.size());
+    log.info("scheduler_start_auctions_complete | auctionsStarted={}", auctionsToStart.size());
+  }
+
+  @Transactional
+  public void endAuctions() {
+    log.info("scheduler_end_auctions_triggered");
+
+    List<Auction> auctionsToEnd = auctionRepository.findAndLockAuctionsToEnd(AuctionStatus.LIVE, LocalDateTime.now());
+    auctionsToEnd.forEach(auction -> {
+      if(!auction.getStatus().canTransitionTo(AuctionStatus.ENDED)){
+        log.error("auction_transition_skipped | reason=invalid_state_transition | fromState={} | toState={} | auctionId={}", auction.getStatus(), AuctionStatus.ENDED, auction.getId());
+        return;
+      }
+      auction.setStatus(AuctionStatus.ENDED);
+      log.info("auction_transitioned_to_ended | auctionId={} | sellerId={}",
+              auction.getId(), auction.getSellerId());
+    });
+
+    auctionRepository.saveAll(auctionsToEnd);
+
+    auctionsToEnd.forEach(auction -> {
+      try {
+        auctionEventProducer.publish(AuctionEvent.builder()
+                .eventType(AuctionEventType.AUCTION_ENDED)
+                .timestamp(LocalDateTime.now())
+                .data(AuctionEventPayload.builder()
+                        .auctionId(auction.getId())
+                        .sellerId(auction.getSellerId())
+                        .status(auction.getStatus())
+                        .startTime(auction.getStartTime())
+                        .endTime(auction.getEndTime())
+                        .build())
+                .build());
+        log.debug("auction_event_publish_success | eventType=AUCTION_ENDED | auctionId={}",
+                auction.getId());
+      } catch (Exception e) {
+        log.error("auction_event_publish_failed | reason=kafka_unavailable | auctionId={}",
+                auction.getId(), e);
+      }
+    });
+
+    log.info("scheduler_end_auctions_complete | auctionsEnded={}", auctionsToEnd.size());
   }
 }
