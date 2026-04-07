@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AuctionEvent {
     private AuctionEventType eventType;
-    private LocalDateTime timestamp;
+    private Instant timestamp;
     private AuctionEventPayload data;
 }

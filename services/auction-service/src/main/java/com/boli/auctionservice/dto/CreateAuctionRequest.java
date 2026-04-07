@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -20,6 +20,6 @@ public class CreateAuctionRequest {
     @Min(message = "Minimum Increment must be at least 1", value = 1)
     private Double minIncrement;
     @Future(message = "Start Time must be in future")
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private Instant startTime;
+    private Instant endTime;
 }

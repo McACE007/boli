@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public interface AuctionRepository extends JpaRepository<Auction, Long>, JpaSpecificationExecutor<Auction> {
@@ -17,13 +17,13 @@ public interface AuctionRepository extends JpaRepository<Auction, Long>, JpaSpec
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Auction> findAndLockAuctionsToStart(
             @Param("status") AuctionStatus status,
-            @Param("now") LocalDateTime now
+            @Param("now") Instant now
     );
 
     @Query("SELECT a FROM Auction a WHERE a.status = :status AND a.endTime <= :now")
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Auction> findAndLockAuctionsToEnd(
             @Param("status") AuctionStatus status,
-            @Param("now") LocalDateTime now
+            @Param("now") Instant now
     );
 }

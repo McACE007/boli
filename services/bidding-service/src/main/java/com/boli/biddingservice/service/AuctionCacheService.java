@@ -26,4 +26,18 @@ public class AuctionCacheService {
         redisTemplate.opsForHash().put(key, "status", "ENDED");
         log.info("auction_marked_ended_in_redis | auctionId={}", auctionId);
     }
+
+    public Map<Object, Object> getAuctionMetadata(Long auctionId){
+        String key = AUCTION_KEY_PREFIX + auctionId;
+        Map<Object, Object> result = redisTemplate.opsForHash().entries(key);
+        log.info("fetched_auction_metadata_from_redis | auctionId={}", auctionId);
+        return result;
+    }
+
+    public void updateHighestBid(Long auctionId, Long bidderId, Double amount){
+        String key = AUCTION_KEY_PREFIX + auctionId;
+        Map<String, String> updates = Map.of("highestBid", String.valueOf(amount), "highestBidderId", String.valueOf(bidderId));
+        redisTemplate.opsForHash().putAll(key, updates);
+        log.info("highestbid_cached_in_redis | auctionId={} | bidderId", auctionId | bidderId);
+    }
 }

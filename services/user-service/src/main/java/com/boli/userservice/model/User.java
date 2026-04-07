@@ -1,6 +1,6 @@
 package com.boli.userservice.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,10 +53,10 @@ public class User implements UserDetails {
   private String password;
   @CreationTimestamp
   @Column(name = "created_at")
-  private LocalDateTime createdAt;
+  private Instant createdAt;
   @UpdateTimestamp
   @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+  private Instant updatedAt;
   @Enumerated(EnumType.STRING)
   @Column(name = "role", nullable = false)
   private RoleType role;

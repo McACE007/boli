@@ -4,12 +4,12 @@ import com.boli.common.enums.AuctionEventType;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
 public class AuctionEvent {
     private AuctionEventType eventType;
-    private LocalDateTime timestamp;
+    private Instant timestamp;
     private AuctionEventPayload data;
 }

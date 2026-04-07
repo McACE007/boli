@@ -25,7 +25,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -40,12 +41,12 @@ public class AuctionService {
     log.info("auction_creation_initiated | userId={}", userId);
     Auction auction = auctionMapper.toAuction(request);
 
-    if(!auction.getStartTime().isAfter(LocalDateTime.now().plusMinutes(5))){
+    if(!auction.getStartTime().isAfter(Instant.now().plus(5, ChronoUnit.MINUTES))){
       log.warn("auction_creation_failed | reason=start_time_too_early | userId={}", userId);
       throw new InvalidAuctionDataException("Start time must be at least 5 minutes from now");
     }
 
-    if(!auction.getEndTime().isAfter(auction.getStartTime().plusMinutes(5))){
+    if(!auction.getEndTime().isAfter(Instant.now().plus(5, ChronoUnit.MINUTES))){
       log.warn("auction_creation_failed | reason=end_time_too_early | userId={}", userId);
       throw new InvalidAuctionDataException("End time must be at least 5 minutes from the Start Time");
     }
@@ -59,13 +60,15 @@ public class AuctionService {
     try {
       auctionEventProducer.publish(AuctionEvent.builder()
               .eventType(AuctionEventType.AUCTION_CREATED)
-              .timestamp(LocalDateTime.now())
+              .timestamp(Instant.now())
               .data(AuctionEventPayload.builder()
                       .auctionId(auction.getId())
                       .sellerId(auction.getSellerId())
                       .status(auction.getStatus())
                       .startTime(auction.getStartTime())
                       .endTime(auction.getEndTime())
+                      .startingPrice(auction.getStartingPrice())
+                      .minIncrement(auction.getMinIncrement())
                       .build())
               .build());
     } catch (Exception e) {
@@ -103,7 +106,7 @@ public class AuctionService {
   public void startAuctions() {
     log.info("scheduler_start_auctions_triggered");
 
-    List<Auction> auctionsToStart = auctionRepository.findAndLockAuctionsToStart(AuctionStatus.SCHEDULED, LocalDateTime.now());
+    List<Auction> auctionsToStart = auctionRepository.findAndLockAuctionsToStart(AuctionStatus.SCHEDULED, Instant.now());
     auctionsToStart.forEach(auction -> {
       if(!auction.getStatus().canTransitionTo(AuctionStatus.LIVE)){
         log.error("auction_transition_skipped | reason=invalid_state_transition | fromState={} | toState={} | auctionId={}", auction.getStatus(), AuctionStatus.LIVE, auction.getId());
@@ -120,13 +123,15 @@ public class AuctionService {
       try {
         auctionEventProducer.publish(AuctionEvent.builder()
                 .eventType(AuctionEventType.AUCTION_STARTED)
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now())
                 .data(AuctionEventPayload.builder()
                         .auctionId(auction.getId())
                         .sellerId(auction.getSellerId())
                         .status(auction.getStatus())
                         .startTime(auction.getStartTime())
                         .endTime(auction.getEndTime())
+                        .startingPrice(auction.getStartingPrice())
+                        .minIncrement(auction.getMinIncrement())
                         .build())
                 .build());
                 log.debug("auction_event_publish_success | eventType=AUCTION_STARTED | auctionId={}",
@@ -144,7 +149,7 @@ public class AuctionService {
   public void endAuctions() {
     log.info("scheduler_end_auctions_triggered");
 
-    List<Auction> auctionsToEnd = auctionRepository.findAndLockAuctionsToEnd(AuctionStatus.LIVE, LocalDateTime.now());
+    List<Auction> auctionsToEnd = auctionRepository.findAndLockAuctionsToEnd(AuctionStatus.LIVE, Instant.now());
     auctionsToEnd.forEach(auction -> {
       if(!auction.getStatus().canTransitionTo(AuctionStatus.ENDED)){
         log.error("auction_transition_skipped | reason=invalid_state_transition | fromState={} | toState={} | auctionId={}", auction.getStatus(), AuctionStatus.ENDED, auction.getId());
@@ -161,13 +166,15 @@ public class AuctionService {
       try {
         auctionEventProducer.publish(AuctionEvent.builder()
                 .eventType(AuctionEventType.AUCTION_ENDED)
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now())
                 .data(AuctionEventPayload.builder()
                         .auctionId(auction.getId())
                         .sellerId(auction.getSellerId())
                         .status(auction.getStatus())
                         .startTime(auction.getStartTime())
                         .endTime(auction.getEndTime())
+                        .startingPrice(auction.getStartingPrice())
+                        .minIncrement(auction.getMinIncrement())
                         .build())
                 .build());
         log.debug("auction_event_publish_success | eventType=AUCTION_ENDED | auctionId={}",

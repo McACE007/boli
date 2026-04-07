@@ -18,10 +18,11 @@ public class AuctionEventListener {
         log.info("kafka_event_received | eventType={} | auctionId={}", event.getEventType(), event.getData().getAuctionId());
 
         if(event.getEventType() == AuctionEventType.AUCTION_STARTED){
-            cacheService.cacheActiveAuction(event.getData().getAuctionId(), event.getData().getStar);
-            log.info("Auction {} is ready for bids!", event.getData().getAuctionId());
+            cacheService.cacheActiveAuction(event.getData().getAuctionId(), event.getData().getStartingPrice(), event.getData().getMinIncrement());
+            log.info("Bid {} is ready for bids!", event.getData().getAuctionId());
         }else if(event.getEventType() == AuctionEventType.AUCTION_ENDED){
-            log.info("Auction {} is closed for bids!", event.getData().getAuctionId());
+            cacheService.markAuctionEnded(event.getData().getAuctionId());
+            log.info("Bid {} is closed for bids!", event.getData().getAuctionId());
         }else{
             log.debug("Ignored event type: {}", event.getEventType());
         }

@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "auction")
@@ -29,9 +29,9 @@ public class Auction {
     @Column(name = "min_increment", nullable = false)
     private Double minIncrement;
     @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    private Instant startTime;
     @Column(name = "end_time", nullable = false)
-    private LocalDateTime endTime;
+    private Instant endTime;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AuctionStatus status;
@@ -41,8 +41,8 @@ public class Auction {
     private Double winningAmount;
     @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 }
