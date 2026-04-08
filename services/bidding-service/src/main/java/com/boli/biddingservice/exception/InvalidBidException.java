@@ -3,8 +3,8 @@ package com.boli.biddingservice.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class InvalidAuctionDataException extends AuctionServiceException {
-    public InvalidAuctionDataException(String message) {
+public class InvalidBidException extends BidServiceException {
+    public InvalidBidException(String message) {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }

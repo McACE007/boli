@@ -18,19 +18,19 @@ public class AuctionCacheService {
         String key = AUCTION_KEY_PREFIX + auctionId;
         Map<String, String> auctionData = Map.of("status", "LIVE", "startingPrice", String.valueOf(startingPrice), "minIncrement", String.valueOf(minIncrement));
         redisTemplate.opsForHash().putAll(key, auctionData);
-        log.info("auction_cached_in_redis | auctionId={}", auctionId);
+        log.info("cache_auction_save_success | auctionId={}", auctionId);
     }
 
     public void markAuctionEnded(Long auctionId){
         String key = AUCTION_KEY_PREFIX + auctionId;
         redisTemplate.opsForHash().put(key, "status", "ENDED");
-        log.info("auction_marked_ended_in_redis | auctionId={}", auctionId);
+        log.info("cache_auction_end_success | auctionId={}", auctionId);
     }
 
     public Map<Object, Object> getAuctionMetadata(Long auctionId){
         String key = AUCTION_KEY_PREFIX + auctionId;
         Map<Object, Object> result = redisTemplate.opsForHash().entries(key);
-        log.info("fetched_auction_metadata_from_redis | auctionId={}", auctionId);
+        log.debug("cache_auction_fetch_success | auctionId={}", auctionId);
         return result;
     }
 
@@ -38,6 +38,6 @@ public class AuctionCacheService {
         String key = AUCTION_KEY_PREFIX + auctionId;
         Map<String, String> updates = Map.of("highestBid", String.valueOf(amount), "highestBidderId", String.valueOf(bidderId));
         redisTemplate.opsForHash().putAll(key, updates);
-        log.info("highestbid_cached_in_redis | auctionId={} | bidderId", auctionId | bidderId);
+        log.debug("cache_highest_bid_update_success | auctionId={} | bidderId={}", auctionId, bidderId);
     }
 }

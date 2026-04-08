@@ -17,8 +17,8 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(AuctionServiceException.class)
-  public ResponseEntity<ApiResponse<Void>> handleAuctionServiceExceptions(AuctionServiceException e){
+  @ExceptionHandler(BidServiceException.class)
+  public ResponseEntity<ApiResponse<Void>> handleBidServiceExceptions(BidServiceException e){
     return ResponseBuilder.error(e.getStatus(), e.getMessage(), null);
   }
 

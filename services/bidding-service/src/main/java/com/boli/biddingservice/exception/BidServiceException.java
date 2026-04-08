@@ -4,10 +4,10 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class AuctionServiceException extends RuntimeException {
+public class BidServiceException extends RuntimeException {
     private final HttpStatus status;
 
-    public AuctionServiceException(String message, HttpStatus status){
+    public BidServiceException(String message, HttpStatus status){
         super(message);
         this.status = status;
     }
