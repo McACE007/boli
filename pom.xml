@@ -24,6 +24,7 @@
 	</properties>
 
 	<modules>
+		<module>services/api-gateway</module>
     	<module>services/config-server</module>
     	<module>services/discovery-service</module>
     	<module>services/user-service</module>

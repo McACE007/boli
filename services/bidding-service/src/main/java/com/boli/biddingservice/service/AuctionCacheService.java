@@ -3,6 +3,7 @@ package com.boli.biddingservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 @Slf4j
 public class AuctionCacheService {
     private final StringRedisTemplate redisTemplate;
+    private final RedisScript<String> placeBidScript;
     private static final String AUCTION_KEY_PREFIX = "auction:";
 
     public void cacheActiveAuction(Long auctionId, Double startingPrice, Double minIncrement){
@@ -39,5 +41,18 @@ public class AuctionCacheService {
         Map<String, String> updates = Map.of("highestBid", String.valueOf(amount), "highestBidderId", String.valueOf(bidderId));
         redisTemplate.opsForHash().putAll(key, updates);
         log.debug("cache_highest_bid_update_success | auctionId={} | bidderId={}", auctionId, bidderId);
+    }
+
+    public String attemptBidAtomically(Long auctionId, Long bidderId, Double amount) {
+        String key = AUCTION_KEY_PREFIX + auctionId;
+
+        // Execute the script!
+        // KEYS[1] = key, ARGV[1] = amount, ARGV[2] = bidderId
+        return redisTemplate.execute(
+                placeBidScript,
+                java.util.List.of(key),
+                String.valueOf(amount),
+                String.valueOf(bidderId)
+        );
     }
 }
