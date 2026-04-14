@@ -11,13 +11,13 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+            allowedOrigins: '*'
+            allowedMethods: '*'
+            allowedHeaders: '*'
       routes:
         # 1. Route for User Service
         - id: user-service
-          uri: lb://USER-SERVICE # "lb://" means Load Balancer via Eureka
+          uri: lb://USER-SERVICE # 'lb://' means Load Balancer via Eureka
           predicates:
             - Path=/api/users/**
 
@@ -41,5 +41,9 @@ spring:
             - Path=/api/notifications/**
   main:
     web-application-type: reactive
+
+jwt:
+  secret: mySecretKeyForJwtTokenGenerationAndValidation123456
+
 server:
   port: 8084
