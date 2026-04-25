@@ -15,9 +15,21 @@ spring:
             allowedMethods: "*"
             allowedHeaders: "*"
       routes:
-        # 1. Route for User Service
+        # 1. Auth endpoints (login, register)
+        - id: auth-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/auth/**
+
+        # 2. Current user profile
+        - id: user-me
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/me
+
+        # 3. Route for User Service
         - id: user-service
-          uri: lb://USER-SERVICE # "lb://" means Load Balancer via Eureka
+          uri: lb://USER-SERVICE
           predicates:
             - Path=/api/users/**
 
@@ -43,3 +55,7 @@ spring:
     web-application-type: reactive
 server:
   port: 8084
+
+jwt:
+  secret: jJUyXRlAHh7caMCgmpLrwglZ3BH8APgjdmee6B18fN1
+  expiration: 31536000000
