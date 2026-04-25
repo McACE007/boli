@@ -7,52 +7,52 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true # Let Gateway use Eureka to find services
+          enabled: true
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+            allowedOrigins: '*'
+            allowedMethods: '*'
+            allowedHeaders: '*'
       routes:
-        # 1. Auth endpoints (login, register)
+        # Auth endpoints (login, register)
         - id: auth-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/auth/**
 
-        # 2. Current user profile
+        # Current user profile
         - id: user-me
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/me
 
-        # 3. Route for User Service
+        # User Service
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/users/**
 
-        # 2. Route for Auction Service
+        # Auction Service
         - id: auction-service
           uri: lb://AUCTION-SERVICE
           predicates:
             - Path=/api/auctions/**
 
-        # 3. Route for Bidding Service
+        # Bidding Service
         - id: bidding-service
           uri: lb://BIDDING-SERVICE
           predicates:
             - Path=/api/bids/**
 
-        # 4. Route for Node.js Notification Service
-        # Since Node isn't in Eureka, we hardcode the direct HTTP URL
+        # Node.js Notification Service (not in Eureka, hardcoded)
         - id: notification-service
           uri: http://localhost:8093
           predicates:
             - Path=/api/notifications/**
   main:
     web-application-type: reactive
+
 server:
   port: 8084
 
